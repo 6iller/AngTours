@@ -7,6 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { UserService } from '../../../services/user.service';
 import { IUser } from '../../../models/user';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { finalize, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-authorization',
@@ -17,8 +19,10 @@ import { Router } from '@angular/router';
 export class AuthorizationComponent implements OnInit, OnDestroy { 
   login: string;
   password: string;
+  isLoading = false;
   constructor(private userService: UserService,  //инжектирование сервиса под будущие задачи
-  private router: Router
+  private router: Router,
+  private messageService: MessageService
 ) {}
   ngOnInit(): void {
     console.log('init')
@@ -26,12 +30,28 @@ export class AuthorizationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     console.log('destr')
   }
-  onAuth(): void {
-    const user: IUser = {
-      login: this.login, password: this.password
+  initToast(type: 'error' | 'success', text: string): void {
+    this.messageService.add({ severity: type, detail: text, life: 3000 });
+  }
+onAuth(): void {
+  this.isLoading = true;
+  const user: IUser = { login: this.login, password: this.password };
+
+  this.userService.authUser(user).pipe(
+    finalize(() => this.isLoading = false)
+  ).subscribe({
+    next: (response) => {
+      if (response) {
+        localStorage.setItem('user', JSON.stringify(response));
+        this.router.navigate(['tickets']);  
+      }
+    },
+    error: () => {
+      this.initToast('error', 'Ошибка авторизации');
     }
-    this.userService.authUser(user);
-    this.router.navigate(['tickets']);
+  });
 }
+
+
 }
 

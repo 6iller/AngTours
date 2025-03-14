@@ -2,7 +2,10 @@ import { Injectable } from '@angular/core';
 import { IUser, IUserRegister } from '../models/user';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../shared/api';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+
+
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +34,15 @@ export class UserService {
   registerUser(user: IUserRegister): Observable<string> {
     return this.http.post(API.registration, user, {responseType: 'text'});
   }
-  authUser(user: IUser): void {
-    this.http.post(API.auth, user).subscribe()
-  }
 
+  authUser(user: IUser): Observable<IUser> {
+    return this.http.post<IUser>(API.auth, user).pipe(
+      catchError(error => {
+        console.error('Ошибка авторизации:', error);
+        // Если статус 400 или 401, возвращаем null. Иначе — общую ошибку.
+        return error.status === 400 || error.status === 401 ? of(null) : throwError(() => new Error('Ошибка сервера'));
+      })
+    );
+  }
 }
+
