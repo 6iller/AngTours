@@ -36,13 +36,14 @@ export class UserService {
   }
 
   authUser(user: IUser): Observable<IUser> {
-    return this.http.post<IUser>(API.auth, user).pipe(
-      catchError(error => {
-        console.error('Ошибка авторизации:', error);
-        // Если статус 400 или 401, возвращаем null. Иначе — общую ошибку.
-        return error.status === 400 || error.status === 401 ? of(null) : throwError(() => new Error('Ошибка сервера'));
-      })
-    );
+    return this.http.post<IUser>(API.auth, user);
+  }
+  //  для варианта реализации 2 - создание переменной currentUser для хранения данных в сервисе 
+    setCurrentUser(user: IUser) {
+    this.currentUser = user;
+  }
+  // (можно вызывать данные для доступа в других компонентах через this.userService.getCurrentUser()), но для текущего задания вызов не требуется
+  getCurrentUser(): IUser | null {
+    return this.currentUser;
   }
 }
-

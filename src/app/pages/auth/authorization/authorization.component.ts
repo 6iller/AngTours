@@ -8,7 +8,6 @@ import { UserService } from '../../../services/user.service';
 import { IUser } from '../../../models/user';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { finalize, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-authorization',
@@ -30,28 +29,34 @@ export class AuthorizationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     console.log('destr')
   }
-  initToast(type: 'error' | 'success', text: string): void {
+  initToast(type: 'error', text: string): void {
     this.messageService.add({ severity: type, detail: text, life: 3000 });
   }
+
+  //создание объекта с интефейсом iuser
 onAuth(): void {
-  this.isLoading = true;
   const user: IUser = { login: this.login, password: this.password };
 
-  this.userService.authUser(user).pipe(
-    finalize(() => this.isLoading = false)
-  ).subscribe({
+  // вызов функции authUser сервиса userService (для обращения к серверу)
+  // subscribe это метод подписки на результат от this.userService.authUser(user) (отправки на сервер заполненных данных)
+  // после получения асинхронного результата subscribe примет объект с двумя свойствами: next и error
+  // next выполнится при успешном response. данные сохранятся в localStorage в формате json, далее прозойдет редирект
+  // иначе вызовется функция initToast (вспл. окно) с ошибкой авторизации
+  this.userService.authUser(user).subscribe({
     next: (response) => {
       if (response) {
-        localStorage.setItem('user', JSON.stringify(response));
-        this.router.navigate(['tickets']);  
+        localStorage.setItem('user', JSON.stringify(response)); 
+        // this.userService.setCurrentUser(response); для варианта реализации 2 (через хранение в сервисе)
+        this.router.navigate(['tickets']);
+      } else {
+        this.initToast('error', 'Ошибка авторизации');
       }
     },
-    error: () => {
+    error: (err) => {
+      console.error("Ошибка авторизации:", err); 
       this.initToast('error', 'Ошибка авторизации');
     }
   });
 }
-
-
-}
+};
 
