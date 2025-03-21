@@ -1,4 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
-input.input-error {
-    border: 1px solid red;
-}
+// input.input-error {
+//     border: 1px solid red;
+// }
+
+@use "./app/styles/input.scss";
+@use "./app/styles/reset.scss";
+@use "variables";
+@use "prime-ng";
+

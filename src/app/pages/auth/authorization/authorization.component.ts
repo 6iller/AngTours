@@ -43,20 +43,13 @@ onAuth(): void {
   // next выполнится при успешном response. данные сохранятся в localStorage в формате json, далее прозойдет редирект
   // иначе вызовется функция initToast (вспл. окно) с ошибкой авторизации
   this.userService.authUser(user).subscribe({
-    next: (response) => {
-      if (response) {
-        localStorage.setItem('user', JSON.stringify(response)); 
-        // this.userService.setCurrentUser(response); для варианта реализации 2 (через хранение в сервисе)
-        this.router.navigate(['tickets']);
-      } else {
-        this.initToast('error', 'Ошибка авторизации');
-      }
+    next: () => {
+        // this.userService.setCurrentUser
+        this.router.navigate(['tours']);
     },
-    error: (err) => {
-      console.error("Ошибка авторизации:", err); 
+    error: () => {
       this.initToast('error', 'Ошибка авторизации');
     }
   });
 }
 };
-

@@ -42,7 +42,7 @@ export class UserService {
     setCurrentUser(user: IUser) {
     this.currentUser = user;
   }
-  // (можно вызывать данные для доступа в других компонентах через this.userService.getCurrentUser()), но для текущего задания вызов не требуется
+  // при варианте 2 можно вызывать данные для доступа в других компонентах через this.userService.getCurrentUser()), но для текущего задания вызов не требуется
   getCurrentUser(): IUser | null {
     return this.currentUser;
   }
