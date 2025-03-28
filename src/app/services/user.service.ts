@@ -11,39 +11,40 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UserService {
-  private userStorage: IUser[] = [];
+  // private userStorage: IUser[] = [];
   private currentUser: IUser | null = null;
 
   constructor(private http: HttpClient) {}
 
-  private getUser (login: string): IUser | null {
-    return this.userStorage.find((user) => login === user.login) || null;
-  }
+  // private getUser (login: string): IUser | null {
+  //   return this.userStorage.find((user) => login === user.login) || null;
+  // }
 
-  addUser(user:IUser, isRememberMe?: boolean): true | string {
-    if(this.getUser(user.login)) {
-      return 'user already exists';
-    }
-    this.userStorage.push(user);
-    return true;
-  }
+  // addUser(user:IUser, isRememberMe?: boolean): true | string {
+  //   if(this.getUser(user.login)) {
+  //     return 'user already exists';
+  //   }
+  //   this.userStorage.push(user);
+  //   return true;
+  // }
 
-  checkUser(login: string): boolean {
-    return !!this.getUser(login);
-  }
+  // checkUser(login: string): boolean {
+  //   return !!this.getUser(login);
+  // }
   registerUser(user: IUserRegister): Observable<string> {
     return this.http.post(API.registration, user, {responseType: 'text'});
   }
 
-  authUser(user: IUser): Observable<IUser> {
-    return this.http.post<IUser>(API.auth, user);
+  authUser(user: IUser): Observable<string> {
+    return this.http.post<string>(API.auth, user);
   }
-  //  для варианта реализации 2 - создание переменной currentUser для хранения данных в сервисе 
-    setCurrentUser(user: IUser) {
+
+  getUser(): IUser {
+    return this.currentUser
+  }
+
+    setUser(user: IUser): void {
     this.currentUser = user;
   }
-  // при варианте 2 можно вызывать данные для доступа в других компонентах через this.userService.getCurrentUser()), но для текущего задания вызов не требуется
-  getCurrentUser(): IUser | null {
-    return this.currentUser;
-  }
+
 }

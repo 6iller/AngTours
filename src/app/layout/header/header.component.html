@@ -2,11 +2,11 @@
 
 <div class="layout-header">
     <div class="layout-header__menu">
+        <p-menubar [model] = "menuItems"/>
         </div>
-        <!--comment-->>
+        <!--comment-->
         <div class="layout-header__right-block">
             <div class="user-info"></div>
-            <div class="logout"></div>
             <div class="date">
                 <div class="date">
                     {{dateTime | date: 'HH:mm:ss'}}
@@ -15,6 +15,21 @@
                         {{dateTime | date: 'EEEE'}}
                     </div>
             </div>
+            <div class="logout">
+                <p-button
+                    [icon] = "logoutIcon"
+                    label="{{user?.login}}"
+                    pTooltip="Logout"
+                    (mouseenter)="hoverLogoutBtn(true)"
+                    (mouseleave)="hoverLogoutBtn(false)"
+                    (onClick)="logOut()"
+                    severity = "secondary"
+                    >
+                </p-button>
+
+
+            </div>
+           
 
             </div>
 </div>

@@ -270,57 +270,7 @@
             "tourOperator": "LocalAdventures",
             "price": "€1,192",
             "img": "pic1.jpg"
-        },
-        // {
-        //     "createdAt": "2022-11-09T06:25:38.670Z",
-        //     "name": "Mexico",
-        //     "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/859.jpg",
-        //     "id": "32",
-        //     "firstName": "sdf",
-        //     "lastName": "sdf",
-        //     "cardNumber": "",
-        //     "birthDate": "2022-11-21T21:00:00.000Z",
-        //     "age": 34,
-        //     "citizenship": "sis",
-        //     "description": "From the south to the center of the country",
-        //     "tourOperator": "LocalAdventures",
-        //     "price": "€2,192",
-        //     "img": "ocean.jpg",
-        //     "type": "multi"
-        // },
-        // {
-        //     "createdAt": "2022-11-11T03:07:21.306Z",
-        //     "name": "Mexico",
-        //     "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/735.jpg",
-        //     "id": "33",
-        //     "firstName": "ewfwf",
-        //     "lastName": "dswfrwef",
-        //     "cardNumber": "",
-        //     "birthDate": null,
-        //     "age": null,
-        //     "citizenship": null,
-        //     "description": "From the south to the center of the country",
-        //     "tourOperator": "LocalAdventures",
-        //     "price": "€2,192",
-        //     "img": "ocean.jpg",
-        //     "type": "multi"
-        // },
-        // {
-        //     "createdAt": "2022-11-11T15:30:46.910Z",
-        //     "name": "Mexico",
-        //     "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/162.jpg",
-        //     "id": "34",
-        //     "firstName": "ewfwf",
-        //     "lastName": "dswfrwef",
-        //     "cardNumber": "",
-        //     "birthDate": null,
-        //     "age": null,
-        //     "citizenship": null,
-        //     "description": "From the south to the center of the country",
-        //     "tourOperator": "LocalAdventures",
-        //     "price": "€2,192",
-        //     "img": "ocean.jpg",
-        //     "type": "multi"
-        // }
+        }
+
     ]
 }

@@ -44,7 +44,7 @@ onAuth(): void {
   // иначе вызовется функция initToast (вспл. окно) с ошибкой авторизации
   this.userService.authUser(user).subscribe({
     next: () => {
-        // this.userService.setCurrentUser
+        this.userService.setUser(user)
         this.router.navigate(['tours']);
     },
     error: () => {
