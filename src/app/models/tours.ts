@@ -1,14 +1,16 @@
-export interface ITours {
+export interface ITour {
     name: string,
     id: string,
     description: string,
     tourOperator: string,
     price: string,
     img: string,
-    type: string
+    type: string,
+    locationId: string,
+    date: Date
 
 }
 
 export interface ITourServerRes {
-tours: ITours[]
+tours: ITour[]
 }

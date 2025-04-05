@@ -26,3 +26,11 @@
     min-width: 100px;
     max-width: 300px;
 }
+
+
+.tour-item-galleria {
+    & .p-galleria-item {
+       height: 250px;
+     }
+ }
+  

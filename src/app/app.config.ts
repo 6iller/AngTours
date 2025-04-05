@@ -9,7 +9,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { ConfigService} from './services/config.service'
 
 function initializeApp(config: ConfigService) {
-    return config.loadObservable()
+    return config.loadPromise();
 }
 
 export const appConfig: ApplicationConfig = {
@@ -20,6 +20,10 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
         theme: {
             preset: Aura
+        },
+        translation: {
+            dayNames: ['Понедельник', 'Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'],
+            monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
         }
     }),
     provideHttpClient(),

@@ -43,7 +43,7 @@ initMenuItems(): MenuItem[] {
     },
     {
       label: 'Настройки',
-      routerLink: ['/settings'],
+      routerLink: ['./settings'],
     },
     {
       label: 'Заказы',

@@ -1,5 +1,20 @@
+
+<p-inputgroup>
+    <input 
+     
+    pInputText
+    placeholder="поиск тура"
+    #searchInput
+    />
+    <p-inputgroup-addon>
+        <p-button icon="pi pi-search" severity="secondary" variant="text"/>
+    </p-inputgroup-addon>
+</p-inputgroup>
+<!--(input)="searchTour($event)"-->    
+<!--[(ngModel)] = "searchValue"--> 
+
 <div class="tours-list flex flex-wrap justify-content-around align-items-stretch">
-    @for (item of tours; track item.id) {
+    @for (item of tours| search: searchInput.value : 'name'; track item.id) {
         <div (click)="goToTour(item)" 
         class="m-2 col-3 tour-item align-self-stretch">
             <p-card
@@ -15,5 +30,8 @@
 
             </p-card>
         </div>
+    }
+    @empty {
+        <div class="no-data">Нет данных</div>
     }
 </div>

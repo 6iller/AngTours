@@ -1,8 +1,58 @@
 <!-- <p>tour-item works!</p>, -->
-@if (tour) {
+
+<!-- option 1-->
+<!-- <p-button
+    label="Back"
+    styleClass = "p-button-link"
+    routerLink="/tours">
+</p-button>
+<div class = "flex flex-1">
+    <img alt="Tour" class="w-full item-pic" src="/img/{{tour.img}}">
+    <p-card *ngIf="tour; else noData"
+header="{{tour.name}}"
+subheader="{{tour.price}}"
+styleClass="p-card-shadow col-10 overflow-hidden"
+>
+<ng-template pTemplate="header"> </ng-template>
+<p>{{tour.description}}</p>
+</p-card> -->
+
+<!-- option 2-->
+<!-- @if (tour) {
+
     <div class="tours-list flex flex-wrap justify-content-around align-items-stretch">
         <h2>{{tour.name}}</h2>
         <img alt="Tour" class="w-full" src="/img/{{tour.img}}">
         <p>{{tour.description}}</p>
     </div>
-}
+} -->
+
+<!-- option 3-->
+<p-button label="Back" styleClass="p-button-link" routerLink="/tours"></p-button>
+<div class = "flex flex-1 tour-item-wrap">
+    @if (tour) {
+        <div><p-card *ngIf="tour; else noData"
+header="{{tour.name}}"
+subheader="{{tour.price}}"
+styleClass="p-card-shadow col-10 overflow-hidden"
+>
+<ng-template pTemplate="header"> 
+    <img alt="Tour" class="w-full" src="/img/{{tour.img}}">
+</ng-template>
+<p>{{tour.description}}</p>
+</p-card></div>
+    } @else {No Data}
+
+
+<div class="nearest-tour">
+    <app-nearest-tours 
+    [tourNearest]="tour"
+    />
+    </div>
+    </div>
+
+
+<ng-template #noData>
+    нет данных
+    </ng-template>
+

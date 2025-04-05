@@ -13,7 +13,7 @@ export class ConfigService {
   constructor(private http: HttpClient) { }
   loadObservable(): Observable<any> {
     const jsonFile = `${API.config}`;
-    return this.http.get(jsonFile);
+    return this.http.get(jsonFile)
   }
   loadPromise(): Promise<any> {
     const jsonFile = `${API.config}`;
@@ -26,11 +26,11 @@ export class ConfigService {
           ConfigService.config = response;
           resolve(response);
         } else {
-          reject ('Ошибка инициализации конфига - неверный формат' + response);
+          reject (`Ошибка при загрузке файла '$(jsonFile)': ${JSON.stringify(response)}`);
                   }
 
         } else {
-          reject ('ошибка инициализации конфига - неверный формат ответа' + response);        
+          reject (`Ошибка при загрузке файла '$(jsonFile)': ${JSON.stringify(response)}`);    
         }
       }). catch((response: any)=> {
         reject (`Ошибка при загрузке файла '$(jsonFile)': ${JSON.stringify(response)}`);

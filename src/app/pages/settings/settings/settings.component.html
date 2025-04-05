@@ -1,0 +1,14 @@
+<!-- <p>settings works!</p>, -->
+<p-button label="Back" styleClass="p-button-link" routerLink="/tours"></p-button>
+
+<h1>Настройки</h1>
+
+<div class="menu">
+    <p-button *ngFor="let item of menuItems" 
+              [label]="item.label" 
+              [routerLink]="item.route"
+              styleClass="p-button-link">
+    </p-button>
+</div>
+
+<router-outlet></router-outlet>
