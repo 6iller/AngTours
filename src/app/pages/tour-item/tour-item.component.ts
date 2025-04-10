@@ -16,7 +16,7 @@ import { NearestToursComponent } from './nearest-tours/nearest-tours/nearest-tou
   templateUrl: './tour-item.component.html',
   styleUrls: ['./tour-item.component.scss'],
   standalone: true, // Добавлено standalone: true
-  imports: [CommonModule, ButtonModule, CardModule, NearestToursComponent] //RouterLink removed
+  imports: [CommonModule, ButtonModule, CardModule, NearestToursComponent, RouterLink] //RouterLink removed
 })
 export class TourItemComponent implements OnInit {
   tourId: string;

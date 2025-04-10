@@ -14,3 +14,9 @@ export interface ITour {
 export interface ITourServerRes {
 tours: ITour[]
 }
+
+
+export interface TourType {
+    key: string;
+    label: string;
+  }

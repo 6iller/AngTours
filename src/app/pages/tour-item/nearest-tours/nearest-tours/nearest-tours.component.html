@@ -12,11 +12,16 @@
     </p-inputgroup-addon>
 </p-inputgroup>
 
-<p-galleria 
-(activeIndexChange)="activeIndexChange($event)"
-class="tour-item-galleria" [value]="toursArr()" [showIndicators]="true" [showThumbnails]="false" [containerStyle]="{ 'width': '340px', 'height':'300px' }">
-    <ng-template #item let-item>
-        <img [src]="'/img/' +item.img" style="width: 100%; display: block;" priority fill />
+<p-galleria *ngIf="toursArr.length > 0; 
+else noTours" (activeIndexChange)="activeIndexChange($event)"
+    class="tour-item-galleria" [value]="toursArr" [showIndicators]="true" [showThumbnails]="false"
+    [containerStyle]="{ 'width': '340px', 'height':'300px' }">
+    <ng-template pTemplate="item" let-item>
+      <img [src]="'/img/' + item.img" style="width: 100%; display: block;" />
     </ng-template>
-</p-galleria>
+  </p-galleria>
+  
+  <ng-template #noTours>
+    <div class="no-tours-message">Туров не найдено</div>
+  </ng-template>
 

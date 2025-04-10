@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../shared/api';
 import { Observable, Subject } from 'rxjs';
-import { ITour, ITourServerRes } from '../models/tours';
+import { ITour, ITourServerRes, TourType } from '../models/tours';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import { ITour, ITourServerRes } from '../models/tours';
 export class ToursService {
 
   //type
-  private tourTypesSubject = new Subject<any>();
+  private tourTypesSubject = new Subject<TourType>;
   readonly tourTypes$ = this.tourTypesSubject.asObservable(); 
 
   //date
@@ -47,11 +47,11 @@ export class ToursService {
     }
     }
 
-  initChangeTourType(val:any): void { //todo define type
-    this.tourTypesSubject.next(val);
+  initChangeTourType(type: TourType): void { //todo define type
+    this.tourTypesSubject.next(type);
   }
-  initChangeTourDate(val:Date): void { //todo define type
-    this.tourDateSubject.next(val);
+  initChangeTourDate(date:Date): void { //todo define type
+    this.tourDateSubject.next(date);
   }
   } 
 //сформировать данные как дом. задание

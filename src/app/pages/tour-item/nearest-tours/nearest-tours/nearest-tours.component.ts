@@ -7,8 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
-import { fromEvent, Subscription } from 'rxjs';
-import { NgOptimizedImage } from '@angular/common';
+import { fromEvent, Subscription } from 'rxjs';;
 
 
 @Component({
@@ -23,10 +22,13 @@ export class NearestToursComponent implements OnInit, OnChanges, AfterViewInit, 
   @ViewChild('searchInput') searchInput: ElementRef;
 
   tourService = inject(ToursService);
-  toursArr = model<ITour[]>([]);
-  toursArrCopy= model<ITour[]>([]);
+  toursArr: ITour[] = [];
+  toursArrCopy: ITour[] = [];
   activateLocationId: string;
   subscription: Subscription;
+  noToursFound: boolean = false; //туров не найдено 
+
+
 
   ngOnInit(): void {
     // console.log('tourNearest', this.tourNearest) 
@@ -38,8 +40,12 @@ export class NearestToursComponent implements OnInit, OnChanges, AfterViewInit, 
     const tour = (changes['tourNearest']?.currentValue as ITour);
     if (tour?.locationId) {
       this.tourService.getNearestTourByLocationId(tour.locationId).subscribe((data)=>{
-        this.toursArr.set(data);
-        this.toursArrCopy.set(data);
+        this.toursArr = data;
+        this.toursArrCopy = [...data];
+        this.noToursFound = this.toursArr.length === 0;
+
+        
+
       });
 
     } 
@@ -47,31 +53,26 @@ export class NearestToursComponent implements OnInit, OnChanges, AfterViewInit, 
 
 }
 
-  ngAfterViewInit(): void {
-    console.log('searchInput afterView', this.searchInput)
+ngAfterViewInit(): void {
+  this.subscription = fromEvent<InputEvent>(this.searchInput.nativeElement, 'input').subscribe(event => {
+    const inputValue = (event.target as HTMLInputElement).value;
+    if (!inputValue) {
+      this.toursArr = [...this.toursArrCopy]; 
+    } else {
+      this.toursArr = this.tourService.searchTours(this.toursArrCopy, inputValue);
+    }
+    this.noToursFound = this.toursArr.length === 0;
+  });
+}
 
-    const eventObservable = fromEvent <InputEvent>(this.searchInput.nativeElement, 'input');
-
-    this,this.subscription=eventObservable.subscribe((ev)=> { //this.searchInput.nativeElement
-      const inputTargetValue = (ev.target as HTMLInputElement).value;
-      console.log('inputTargetValue')
-      if (inputTargetValue=== '') {
-        this.toursArr.set(this.toursArrCopy());
-              } else {
-                const newTours = this.tourService.searchTours(this.toursArrCopy(), inputTargetValue);
-                this.toursArr.set(newTours);
-              }
-    })
+ngOnDestroy(): void {
+  if (this.subscription) { // Проверка на существование подписки перед отпиской
+      this.subscription.unsubscribe();
   }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+}
+activeIndexChange(index: number): void {
+  if (this.toursArr && this.toursArr.length > index) {
+    this.onTourChange.emit(this.toursArr[index]);
   }
-activeIndexChange (index:number) {
-  console.log('index', index);
-  const tours = this.toursArr();
-  const activeTour = tours.find((el, i)=> i === index);
-  this.onTourChange.emit(activeTour);
-
 }
 }
