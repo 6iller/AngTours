@@ -17,3 +17,6 @@
     <app-footer></app-footer>
     </footer>
     </div>
+
+    <app-loader [loaderStatus]="loader$ | async"/>
+    <!-- <app-loader *ngIf="(loader$ | async)"></app-loader> -->

@@ -11,6 +11,7 @@ import localeRu from '@angular/common/locales/ru';
 import { registerLocaleData } from '@angular/common';
 
 
+
 registerLocaleData(localeRu);
 @Component({
   selector: 'app-aside',

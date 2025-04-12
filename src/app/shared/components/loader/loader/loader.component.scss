@@ -1,0 +1,15 @@
+// :host {
+//   display: block;
+// }
+
+.loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // pointer-events: none; // запрет лоадеру реагировать на указатель
+}

@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../shared/api';
-import { Observable, Subject } from 'rxjs';
-import { ITour, ITourServerRes, TourType } from '../models/tours';
+import { catchError, delay, forkJoin, map, Observable, Subject, switchMap, tap, of } from 'rxjs';
+import { Coords, ICountriesResponseItem, IFilterTypeLogic, ITour, ITourServerRes, TourType } from '../models/tours';
+import { MapService } from './map.service';
+import { LoaderService } from './loader.service';
+import { set } from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
@@ -10,20 +13,107 @@ import { ITour, ITourServerRes, TourType } from '../models/tours';
 export class ToursService {
 
   //type
-  private tourTypesSubject = new Subject<TourType>;
+  private tourTypesSubject = new Subject<TourType>();// !IFilterTypeLogic
   readonly tourTypes$ = this.tourTypesSubject.asObservable(); 
 
   //date
   private tourDateSubject = new Subject<Date>();
   readonly tourDate$ = this.tourDateSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private mapService: MapService, private loaderService: LoaderService) { }
 
-  getTours (): Observable<ITourServerRes> { 
-    return this.http.get<ITourServerRes>(API.tours);
-  }
+  // getTours (): Observable<ITourServerRes> {  //lection: ITour[] 
+  //   const countries = this.http.get<ICountriesResponseItem[]>(API.countries);
+  //   const tours = this.http.get<ITourServerRes>(API.tours); // проверить 
+  //   // return this.http.get<ITourServerRes>(API.tours);
+  //   return forkJoin<[ICountriesResponseItem[], ITourServerRes]>([countries,tours]).pipe (
+  //     map((data)=>{
+  //       let toursWithCountries = [] as ITour[];
+  //       const tourArr = data[1].tours;
+  //       const countriesMap = new Map();
+        
+      //   data[0].forEach(country =>{
+      //     countriesMap.set(country.iso_code2, country);
+      //   });
+        
+      //   if (Array.isArray(tourArr)) {
+      //     console.log('***toursArr', tourArr)
+      //     toursWithCountries = tourArr.map((tour)=>{
+      //       return {
+      //         ...tour,
+      //         country: countriesMap.get(tour.code) || null // add new prop
+      //       }
+      //     });
+      //   } 
+      //   return toursWithCountries;
+      // }
+//       countriesResponse.forEach(country => {
+//         countriesMap.set(country.iso_code2, country);
+//       });
+
+//       if (Array.isArray(tourArr)) {
+//         console.log('***toursArr', tourArr);
+//         toursWithCountries.push(...tourArr.map((tour) => {
+//           return {
+//             ...tour,
+//             country: countriesMap.get(tour.code) || null // добавляем новое свойство
+//           };
+//         }));
+//       }
+
+//       // Возвращаем объект с массивом туров внутри свойства 'tours'
+//       return { tours: toursWithCountries }; // Изменяем здесь
+//     })
+//   );
+// }
+getTours(): Observable<ITourServerRes> {
+  // set loader
+  this.loaderService.setLoader(true);
+  const countries = this.http.get<ICountriesResponseItem[]>(API.countries);
+  const tours = this.http.get<ITourServerRes>(API.tours);
+
+  return forkJoin<[ICountriesResponseItem[], ITourServerRes]>([countries, tours]).pipe(
+    delay(1000),
+    map(([countriesResponse, toursResponse]) => { // Объявляем переменные здесь
+      const toursWithCountries: ITour[] = []; // Инициализируем массив для туров
+      const tourArr = toursResponse.tours; // Получаем массив туров из ответа
+      const countriesMap = new Map<string, ICountriesResponseItem>(); // Создаем карту для стран
+
+      // Заполняем карту странами
+      countriesResponse.forEach((country) => {
+        countriesMap.set(country.iso_code2, country);
+      });
+
+      if (Array.isArray(tourArr)) {
+        console.log('***toursArr', tourArr);
+        toursWithCountries.push(...tourArr.map((tour) => {
+          return {
+            ...tour,
+            country: countriesMap.get(tour.code) || null // добавляем новое свойство
+          };
+        }));
+      }
+
+      // Возвращаем объект с массивом туров внутри свойства 'tours'
+      return { tours: toursWithCountries }; // Возвращаем корректный объект
+    }),
+    tap((data)=> {
+      // hide loader
+      this.loaderService.setLoader(false);
+    }),
+    catchError((err)=>{
+      this.loaderService.setLoader(false);
+      return of(null);
+    })
+  );
+}
+  
   getTourByID(id:string): Observable<ITour> {
     return this.http.get<ITour>(`${API.tours}/${id}`);
+  }
+  
+  deleteTourByID(id:string): Observable<ITour> {
+    return this.http.delete<ITour>(`${API.tours}/${id}`);
   }
 
   getNearestTourByLocationId(id:string): Observable<ITour[]> {
@@ -53,6 +143,35 @@ export class ToursService {
   initChangeTourDate(date:Date): void { //todo define type
     this.tourDateSubject.next(date);
   }
+  getCountryByCode(code:string):Observable<any> {
+    return this.http.get<Coords[]>(API.countryByCode, {params: {codes:code}}).pipe(
+      //send new data
+      map((countryDataArr)=>countryDataArr[0]),
+     
+      // send new Observable
+     
+      switchMap((countryData)=>{
+      console.log('countryData', countryData);
+      const coords = {lat: countryData.latlng[0], lng: countryData.latlng[1]};
+        //new Observable
+        return this.mapService.getWeather(coords).pipe(
+          map((weatherResponse)=>{
+            const current = weatherResponse.current;
+            const hourly = weatherResponse.hourly;
+            const weatherData = {
+              isDay: current.is_day,
+              snowfall: current.snowfall,
+              rain: current.rain,
+              currentWeather: hourly.temperature_2m[15] // индекс 15 для времени температуры
+            };
+            console.log('weatherData', weatherData)
+            return {countryData, weatherData}
+          })
+        )
+      }
+    
+    ),
+    );
+  }
   } 
-//сформировать данные как дом. задание
 

@@ -5,5 +5,10 @@
 .tours-list {
   & .tour-item {
     position: relative;
+    &.active {
+      border: 1px solid orange;
+      border-radius: 5%;
+    }
   }
 }
+
