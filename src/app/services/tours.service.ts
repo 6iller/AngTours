@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../shared/api';
-import { catchError, delay, forkJoin, map, Observable, Subject, switchMap, tap, of } from 'rxjs';
+import { catchError, delay, forkJoin, map, Observable, Subject, switchMap, tap, of, withLatestFrom, BehaviorSubject } from 'rxjs';
 import { Coords, ICountriesResponseItem, IFilterTypeLogic, ITour, ITourServerRes, TourType } from '../models/tours';
 import { MapService } from './map.service';
 import { LoaderService } from './loader.service';
 import { set } from 'date-fns';
+import { BasketService } from './basket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,10 @@ export class ToursService {
   private tourDateSubject = new Subject<Date>();
   readonly tourDate$ = this.tourDateSubject.asObservable();
 
-  constructor(private http: HttpClient, private mapService: MapService, private loaderService: LoaderService) { }
+  private showBasketOnlySubject = new BehaviorSubject<boolean>(false);
+  showBasketOnly$ = this.showBasketOnlySubject.asObservable();
+
+  constructor(private http: HttpClient, private mapService: MapService, private loaderService: LoaderService, private basketService: BasketService) { }
 
   // getTours (): Observable<ITourServerRes> {  //lection: ITour[] 
   //   const countries = this.http.get<ICountriesResponseItem[]>(API.countries);
@@ -74,7 +78,8 @@ getTours(): Observable<ITourServerRes> {
 
   return forkJoin<[ICountriesResponseItem[], ITourServerRes]>([countries, tours]).pipe(
     delay(1000),
-    map(([countriesResponse, toursResponse]) => { // Объявляем переменные здесь
+    // withLatestFrom(this.basketService.basketStore$),
+    map(([countriesResponse, toursResponse]) => { // Объявляем переменные
       const toursWithCountries: ITour[] = []; // Инициализируем массив для туров
       const tourArr = toursResponse.tours; // Получаем массив туров из ответа
       const countriesMap = new Map<string, ICountriesResponseItem>(); // Создаем карту для стран
@@ -109,7 +114,7 @@ getTours(): Observable<ITourServerRes> {
 }
   
   getTourByID(id:string): Observable<ITour> {
-    return this.http.get<ITour>(`${API.tours}/${id}`);
+    return this.http.get<ITour>(`${API.tour}/${id}`);
   }
   
   deleteTourByID(id:string): Observable<ITour> {
@@ -173,5 +178,14 @@ getTours(): Observable<ITourServerRes> {
     ),
     );
   }
+  postOrder(orderBody:any): Observable<any> {
+    return this.http.post<any>(API.order,orderBody);
+  }
+  initShowBasketOnly(show: boolean): void {
+    this.showBasketOnlySubject.next(show);
+  }
+
+  
+
   } 
 

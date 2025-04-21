@@ -1,0 +1,114 @@
+
+<div class="ticket-info-wrap col-6">
+    <div>
+        <a routerLink="/tours">Назад</a>
+
+        <div class="mt-3">
+            <h2>Информация о туре</h2>
+            <div>Название {{tour?.name}}</div>
+        </div>
+        <div class="mt-3">
+            <h2>Информация о покупателе</h2>
+            <div>
+                <div class="mt-3 user-info" [formGroup]="userForm">
+                    <!-- @for (fieldObj of userFormFieldArr; track fieldObj.control) {
+                        <ng-container
+                        [ngTemplateOutlet]="formFiled"
+                        [ngTemplateOutletContext]="fieldObj"
+                        />
+                    } -->
+                    <ng-container *ngFor="let field of userFormFieldsArr">
+                        <ng-container [ngTemplateOutlet]="formField" [ngTemplateOutletContext]="field"></ng-container>
+                      </ng-container>
+
+
+                    <!-- <div class="form-group mt-3">
+                        <label for="name" class="mx-3">Имя</label>
+                        <input type="text"
+                        class="form-control mt-3"
+                        id="name"
+                        pInputText
+                        formControlName="firstName"
+                        placeholder="Введите имя"
+                        >
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="surname" class="mx-3">Фамилия</label>
+                        <input type="text"
+                        class="form-control mt-3"
+                        id="surname"
+                        pInputText
+                        formControlName="lastName"
+                        placeholder="Введите фамилию"
+                        >
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="cardNumber" class="mx-3">Номер карты</label>
+                        <input type="text"
+                        class="form-control mt-3"
+                        id="cardNumber"
+                        pInputText
+                        formControlName="cardNumber"
+                        placeholder="Введите номер карты"
+                        >
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class="mx-3">Возраст</label>
+                        <p-inputNumber
+                        name="age"
+                        formControlName="age"
+                        [showButtons]="true"
+                        [min]="0"
+                        class="form-control mt-3"                     
+                        >
+                    </p-inputNumber>
+                    </div> 
+                    <div class="form-group mt-3">
+                        <label class="mx-3">Дата рождения</label>
+                        <p-datePicker
+                        name="birthDate"
+                        formControlName="birthDate"
+                        class="form-control mt-3"                     
+                        >
+                    </p-datePicker>
+                    </div> 
+
+                    <div class="form-group mt-3">
+                        <label for="citizenship" class="mx-3">Гражданство</label>
+                        <input type="text"
+                        id="citizenship"
+                        pInputText
+                        formControlName="citizenship"
+                        placeholder="введите гражданство"                    
+                        >
+                    </div> -->
+                    <div class="form-group mt-3">
+                        <p-button
+                        (click)="initOrder()"
+                        class="btn btn-primary"
+                        [disabled]="!userForm.valid">
+                        Перейти к оформлению
+                        </p-button>
+
+                </div> 
+
+        </div>
+    </div>
+</div>
+
+
+<ng-template #formField let-label="label" let-placeholder="placeholder" let-control="control" let-type="type">
+    <div [formGroup]="userForm" class="form-group mt-3">
+      <label [attr.for]="control" class="mx-3">{{ label }}</label>
+      <ng-container *ngIf="type === 'input'">
+        <input type="text" class="form-control mt-3" [id]="control" pInputText [formControlName]="control" [placeholder]="placeholder">
+      </ng-container>
+      <ng-container *ngIf="type === 'number'">
+        <p-inputNumber [formControlName]="control" [showButtons]="true" [min]="0" class="form-control mt-3"></p-inputNumber>
+      </ng-container>
+      <ng-container *ngIf="type === 'date'">
+        <p-calendar [formControlName]="control" class="form-control mt-3" dateFormat="mm/dd/yy"></p-calendar>
+    </ng-container>
+    </div>
+  </ng-template>
+</div>

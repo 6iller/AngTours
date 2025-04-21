@@ -7,6 +7,18 @@
         <!--comment-->
         <div class="layout-header__right-block">
             <div class="user-info"></div>
+            <div class="basket mr-4" (click)="goToBasket()"> <!--добавлен клик и метод goToBasket-->
+                <p-overlaybadge
+                badgeSize="small"
+                [value] = "(basketStore$ | async).length"
+                severity="danger">
+            
+                <div class="basket-icon-wrap">
+                <i class="pi pi-cart-arrow-down"></i>
+                </div>
+            </p-overlaybadge> 
+            </div>
+
             <div class="date">
                 <div class="date">
                     {{dateTime | date: 'HH:mm:ss'}}

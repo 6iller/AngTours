@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { ToursService } from '../../services/tours.service';
 import {CardModule} from 'primeng/card'
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { SlicePipe } from '@angular/common';
-import { CountryWeatherData, ICountriesResponseItem, ILocation, ITour } from '../../models/tours';
+import { CommonModule, SlicePipe } from '@angular/common';
+import { ICombinedData, ICountriesResponseItem, ILocation, ITour } from '../../models/tours';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { ButtonModule } from 'primeng/button';
@@ -17,6 +17,7 @@ import { HighlightDirective } from '../../shared/directives/highlight.directive'
 import { takeUntil } from 'rxjs/operators';
 import { DialogModule } from 'primeng/dialog' 
 import { MapComponent } from '../../shared/components/map/map/map.component';
+import { BasketService } from '../../services/basket.service';
 
 
 
@@ -34,21 +35,25 @@ import { MapComponent } from '../../shared/components/map/map/map.component';
     FormsModule, 
     HighlightDirective,
     MapComponent,
-    DialogModule
+    DialogModule,
+    CommonModule,
+    SlicePipe
   ], //SlicePipe
   templateUrl: './tours.component.html',
   styleUrl: './tours.component.scss',
   // encapsulation: ViewEncapsulation.None,
 })
-export class ToursComponent implements OnInit { 
+export class ToursComponent implements OnInit, OnDestroy{ 
   tours: ITour[] = [];
   toursStore: ITour[]=[];
   searchValue = '';
   destroyer = new Subject<boolean>();
   showModal=false;
   location: ILocation = null;
-  weatherData: CountryWeatherData["weatherData"] | null = null; // Новое свойство ДЗ
-  country: ICountriesResponseItem | null = null; // Новое свойство ДЗ
+  weatherData: ICombinedData["weatherData"] | null = null;
+  country: ICountriesResponseItem | null = null;
+  weatherInfo: any = {day: null, rain: null};
+  selectedTour: ITour = null;
 
   // typeTourFilter: IFilter 
   // typeTourSubscriber: Subscription;
@@ -56,7 +61,11 @@ export class ToursComponent implements OnInit {
 
   constructor(private toursService: ToursService, 
     private route: ActivatedRoute,
-    private router: Router){}
+    private router: Router,
+    public basketService: BasketService
+  
+  ){}
+     
 
   ngOnInit(): void {
     
@@ -141,17 +150,35 @@ selectActive (index: number): void {
   }
 }
 
-getCountryDetail(ev:Event, code:string): void {
+getCountryDetail(ev:Event, code:string, tour: ITour): void {
   ev.stopPropagation();
-  this.toursService.getCountryByCode(code).subscribe((data)=>{
-    if((data)) {
+  this.toursService.getCountryByCode(code).subscribe((data: ICombinedData)=>{
+    if((data && data.countryData && data.weatherData)) {
       const countryInfo = data.countryData;
+      this.country = countryInfo; // Сохраняем countryInfo 
       console.log('countryInfo', countryInfo)
       this.location = {lat: countryInfo.latlng[0], lng: countryInfo.latlng[1]};
-      this.country = data.countryData; // Заполняем данные страны ДЗ
-          this.weatherData = data.weatherData; // Заполняем данные погоды ДЗ
+      this.weatherData = data.weatherData; // Сохраняем weatherData
+      this.weatherInfo.day = this.weatherData.isDay ? 'День' : 'Ночь'
+      this.selectedTour=tour;
       this.showModal = true;
+    } else {
+      console.error("ошибка данных");
     }
   });
 }
+
+setItemToBasket (ev: Event, item: ITour): void {
+  ev.stopPropagation();
+  this.basketService.setItemToBasket(item);
+}
+removeItemFromBasket (ev: Event, item: ITour):void {
+  ev.stopPropagation();
+  this.basketService.removeItemFromBasket(item);
+}
+trackById(index: number, item: ITour): any {
+  return item.id; //   идентификатор тура для кода шаблона V.2 работы корзины
+}
+
+
 }

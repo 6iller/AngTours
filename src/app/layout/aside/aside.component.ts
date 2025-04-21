@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 // import { ru } from 'primeng/api';
 import localeRu from '@angular/common/locales/ru';
 import { registerLocaleData } from '@angular/common';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 
@@ -16,7 +17,7 @@ registerLocaleData(localeRu);
 @Component({
   selector: 'app-aside',
   // standalone: true,
-  imports: [SelectModule, FormsModule, DatePickerModule],
+  imports: [SelectModule, FormsModule, DatePickerModule, CheckboxModule],
   templateUrl: './aside.component.html',
   styleUrl: './aside.component.scss',
 })
@@ -24,6 +25,7 @@ export class AsideComponent implements OnInit {
   private tourService = inject(ToursService);
   date: Date | null = null;
   selectedType: TourType = null;
+  showBasketOnly = false; // свойство для чекбокса
   
 
   tourTypes: TourType[] = [
@@ -51,6 +53,9 @@ export class AsideComponent implements OnInit {
     this.tourService.initChangeTourDate(ev);
     // console.log ('****change date');
     // this.tourService.initChangeTourDate(ev);
+  }
+  toggleShowBasketOnly(): void { // Новый метод для обработки чекбокса
+    this.tourService.initShowBasketOnly(this.showBasketOnly);
   }
   ruLocale = {
     firstDayOfWeek: 1,

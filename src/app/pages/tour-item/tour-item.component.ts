@@ -24,7 +24,8 @@ export class TourItemComponent implements OnInit {
 
   constructor(
     private toursService: ToursService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -36,6 +37,10 @@ export class TourItemComponent implements OnInit {
       } else {
       }
     });
+  }
+
+  initOrder(ev:Event): void {
+    this.router.navigate(['/tours/order', this.tour.id])
   }
 }
 

@@ -9,7 +9,8 @@ export interface ITour {
     locationId: string,
     date?: Date,
     country?: ICountriesResponseItem, // действие 1
-    code?: string
+    code?: string,
+    inBasket?: boolean,
 
 }
 
@@ -28,6 +29,7 @@ export interface TourType {
     iso_code3: string;
     name_ru: string;
     flag_url: string; // действие 2
+    latlng: [number, number]; 
   }
 
   export interface IFilterTypeLogic {
@@ -46,10 +48,7 @@ export interface TourType {
   
  export interface CountryWeatherData { // Новый интерфейс
     countryData: Coords,
-    iso_code2: string;
-    iso_code3: string;
-    name_ru: string;
-    flag_url: string; // действие 2
+
     weatherData: {
       isDay: 0 | 1;
       snowfall: 0 | 1;
@@ -57,3 +56,13 @@ export interface TourType {
       currentWeather: number;
     };
   }
+
+  export interface ICombinedData {
+    countryData: ICountriesResponseItem;
+    weatherData: {
+        isDay: 0 | 1;
+        snowfall: 0 | 1;
+        rain: 0 | 1;
+        currentWeather: number;
+    };
+}

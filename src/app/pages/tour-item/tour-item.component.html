@@ -28,7 +28,9 @@ styleClass="p-card-shadow col-10 overflow-hidden"
 } -->
 
 <!-- option 3-->
-<p-button label="Back" styleClass="p-button-link" routerLink="/tours"></p-button>
+<p-button label="Back" styleClass="p-button-link" routerLink="/tours">
+</p-button>
+
 <div class = "flex flex-1 tour-item-wrap">
     @if (tour) {
         <div><p-card *ngIf="tour; else noData"
@@ -41,7 +43,13 @@ styleClass="p-card-shadow col-10 overflow-hidden"
 </ng-template>
 <p>{{tour.description}}</p>
 </p-card></div>
-    } @else {No Data}
+    <p-button
+    label="Сформировать заказ"
+    styleClass="my-3"
+    (onClick)="initOrder($event)"
+    ></p-button>
+    } 
+    @else {No Data}
 
 
 <div class="nearest-tour">

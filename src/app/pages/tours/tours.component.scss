@@ -1,14 +1,50 @@
-:host {
-  display: block;
-}
+// :host {
+//   display: block;
+// }
+
+// .tours-list {
+//   & .tour-item {
+//     position: relative;
+//     &.active {
+//       border: 1px solid orange;
+//       border-radius: 5%;
+//     }
+//   }
+// }
+
+// :host {
+//   display: block;
+// }
+
+// .tours-list {
+//   & .tour-item {
+//     position: relative;
+//     &.active {
+//       border: 1px solid orange;
+//       border-radius: 5%;
+//     }
+//   }
+// }
+
+// .basket {
+//   cursor: pointer;
+// }
 
 .tours-list {
-  & .tour-item {
-    position: relative;
-    &.active {
-      border: 1px solid orange;
-      border-radius: 5%;
-    }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around; /* Или space-between, flex-start */
+  gap: 1rem; /* Проще управлять промежутками */
+
+  .tour-item {
+      flex: 0 0 calc(33.33% - 1rem); /* Занимает 1/3 ширины с учетом gap */
+      /* Остальные стили (position, active и т.д.) */
+      position: relative;
+
+      &.active {
+          border: 1px solid orange;
+          border-radius: 5%;
+        }
   }
 }
 
