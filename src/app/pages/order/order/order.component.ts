@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
+import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'app-order',
@@ -20,7 +21,8 @@ import { CommonModule, NgTemplateOutlet } from '@angular/common';
     InputTextModule,
     DatePickerModule,
     ButtonModule,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    CalendarModule
     ],
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss',

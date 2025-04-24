@@ -8,6 +8,7 @@ import { LoaderService } from './loader.service';
 import { set } from 'date-fns';
 import { BasketService } from './basket.service';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +19,8 @@ export class ToursService {
   readonly tourTypes$ = this.tourTypesSubject.asObservable(); 
 
   //date
-  private tourDateSubject = new Subject<Date>();
+  // private tourDateSubject = new Subject<Date>();
+  private tourDateSubject = new BehaviorSubject<Date | null>(null);
   readonly tourDate$ = this.tourDateSubject.asObservable();
 
   private showBasketOnlySubject = new BehaviorSubject<boolean>(false);
@@ -145,7 +147,7 @@ getTours(): Observable<ITourServerRes> {
   initChangeTourType(type: TourType): void { //todo define type
     this.tourTypesSubject.next(type);
   }
-  initChangeTourDate(date:Date): void { //todo define type
+  initChangeTourDate(date:Date | null): void { //todo define type
     this.tourDateSubject.next(date);
   }
   getCountryByCode(code:string):Observable<any> {

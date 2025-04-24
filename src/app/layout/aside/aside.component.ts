@@ -16,7 +16,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 registerLocaleData(localeRu);
 @Component({
   selector: 'app-aside',
-  // standalone: true,
+  standalone: true,
   imports: [SelectModule, FormsModule, DatePickerModule, CheckboxModule],
   templateUrl: './aside.component.html',
   styleUrl: './aside.component.scss',
@@ -66,6 +66,9 @@ export class AsideComponent implements OnInit {
     today: 'Сегодня',
     clear: 'Очистить'
   };
+  clearDate() {
+    // ... другая логика очистки ...
+    this.tourService.initChangeTourDate(null); 
 }
 //   translate(lang: string) {
 //     this.translateService.use(lang);
@@ -82,3 +85,4 @@ export class AsideComponent implements OnInit {
   //   console.log('Date cleared');
   // }
 
+}

@@ -18,6 +18,7 @@ import { takeUntil } from 'rxjs/operators';
 import { DialogModule } from 'primeng/dialog' 
 import { MapComponent } from '../../shared/components/map/map/map.component';
 import { BasketService } from '../../services/basket.service';
+import { Observable } from 'rxjs';
 
 
 
@@ -54,6 +55,7 @@ export class ToursComponent implements OnInit, OnDestroy{
   country: ICountriesResponseItem | null = null;
   weatherInfo: any = {day: null, rain: null};
   selectedTour: ITour = null;
+  filteredTours$!: Observable<ITour[]>; // Объявление Observable
 
   // typeTourFilter: IFilter 
   // typeTourSubscriber: Subscription;

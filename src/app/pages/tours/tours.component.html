@@ -93,7 +93,15 @@ class="tours-list flex flex-wrap justify-content-around align-items-stretch">
             </div>
         </div>
     </div>
-    <div *ngIf="(tours | search: searchInput.value : 'name').length === 0" class="no-data">Нет данных
+    <!-- <div *ngIf="(tours | search: searchInput.value : 'name').length === 0" class="no-data">Нет данных
+    </div> -->
+    <div *ngIf="(filteredTours$ | async) as tours">
+        <div *ngIf="tours.length === 0" class="no-data">Нет данных</div>
+        <ng-container *ngIf="tours.length > 0">
+            <div *ngFor="let item of tours; trackBy: trackById" class="tour-item">
+                <!-- ... (код отображения тура без изменений) ... -->
+            </div>
+        </ng-container>
     </div>
 </div>
 
