@@ -11,10 +11,10 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SearchPipe } from '../../shared/pipes/search.pipe';
 import { FormsModule } from '@angular/forms';
-import { isValid } from "date-fns";
-import { Subject, Subscription } from 'rxjs';
+import { isSameDay, isValid } from "date-fns";
+import { combineLatest, Subject, Subscription } from 'rxjs';
 import { HighlightDirective } from '../../shared/directives/highlight.directive';
-import { takeUntil } from 'rxjs/operators';
+import { startWith, takeUntil } from 'rxjs/operators';
 import { DialogModule } from 'primeng/dialog' 
 import { MapComponent } from '../../shared/components/map/map/map.component';
 import { BasketService } from '../../services/basket.service';
@@ -67,67 +67,110 @@ export class ToursComponent implements OnInit, OnDestroy{
   ){}
      
 
-  ngOnInit(): void {
+  // ngOnInit(): void {
     
-    //tour
-    // this.typeTourSubscriber = this.toursService.tourTypes$.subscribe((tour)=>{
-    //   this.typeTourFilter = tour;
-    //   this.initTourFilterLogic();
-    // });
+  //   //tour
+  //   // this.typeTourSubscriber = this.toursService.tourTypes$.subscribe((tour)=>{
+  //   //   this.typeTourFilter = tour;
+  //   //   this.initTourFilterLogic();
+  //   // });
 
-    // добавляем takeUntill в подписку на типы туров
-    // this.toursService.tourTypes$.subscribe ((tour)=>{
-      this.toursService.tourTypes$.pipe(
-        takeUntil(this.destroyer) // Используем takeUntil
-      ).subscribe((tour) => {
-    console.log('tour', tour)
-      switch(tour.key) {
-        case 'group':
-          this.tours=this.toursStore.filter((el)=> el.type==='group')
-          break;
-          case 'single':
-            this.tours=this.toursStore.filter((el)=> el.type==='single')
-            break;
-            case 'all':
-            this.tours=[...this.toursStore];
-            break;
-      }
-    });
+  //   // добавляем takeUntill в подписку на типы туров
+  //   // this.toursService.tourTypes$.subscribe ((tour)=>{
+  //     this.toursService.tourTypes$.pipe(
+  //       takeUntil(this.destroyer) // Используем takeUntil
+  //     ).subscribe((tour) => {
+  //   console.log('tour', tour)
+  //     switch(tour.key) {
+  //       case 'group':
+  //         this.tours=this.toursStore.filter((el)=> el.type==='group')
+  //         break;
+  //         case 'single':
+  //           this.tours=this.toursStore.filter((el)=> el.type==='single')
+  //           break;
+  //           case 'all':
+  //           this.tours=[...this.toursStore];
+  //           break;
+  //     }
+  //   });
 
-    // Date
-    // переделываем для использования takeUntill
-    //this.toursService.tourDate$.subscribe((date)=> {
-      this.toursService.tourDate$.pipe(
-        takeUntil(this.destroyer) // Используем takeUntil
-      ).subscribe((date) => {
-    console.log('****date', date)
-      this.tours = this.toursStore.filter((tour) => {
-        if (isValid(new Date(tour.date))) {
-          const tourDate = new Date(tour.date).setHours(0,0,0,0);
-          console.log('****tourDate', tourDate)
-          const calendarDate = new Date(date).setHours(0,0,0);
-          console.log('****calendarDate', calendarDate);
-          return tourDate === calendarDate;
+  //   // Date
+  //   // переделываем для использования takeUntill
+  //   //this.toursService.tourDate$.subscribe((date)=> {
+  //     this.toursService.tourDate$.pipe(
+  //       takeUntil(this.destroyer) // Используем takeUntil
+  //     ).subscribe((date) => {
+  //   console.log('****date', date)
+  //     this.tours = this.toursStore.filter((tour) => {
+  //       if (isValid(new Date(tour.date))) {
+  //         const tourDate = new Date(tour.date).setHours(0,0,0,0);
+  //         console.log('****tourDate', tourDate)
+  //         const calendarDate = new Date(date).setHours(0,0,0);
+  //         console.log('****calendarDate', calendarDate);
+  //         return tourDate === calendarDate;
 
-        } else {
-          return false;
+  //       } else {
+  //         return false;
+  //       }
+  //     });
+  //   })
+
+
+  //   console.log ('activatedRoute', this.route)
+  //   //получение туров - используем takeUntill
+  //   // this.toursService.getTours().subscribe((data) =>{
+  //     this.toursService.getTours().pipe(
+  //       takeUntil(this.destroyer) // Используем takeUntil
+  //     ).subscribe((data) => {
+  //     if(Array.isArray(data?.tours)){
+  //       this.tours = data.tours;
+  //       this.toursStore=[...data.tours];
+  //     }
+  //   });
+  // }
+
+  // новый ngOnInit для календаря
+  ngOnInit(): void {
+    this.toursService.getTours().pipe(
+        takeUntil(this.destroyer)
+    ).subscribe((data) => {
+        if (Array.isArray(data?.tours)) {
+            this.tours = data.tours;
+            this.toursStore = [...data.tours];
         }
-      });
-    })
-
-
-    console.log ('activatedRoute', this.route)
-    //получение туров - используем takeUntill
-    // this.toursService.getTours().subscribe((data) =>{
-      this.toursService.getTours().pipe(
-        takeUntil(this.destroyer) // Используем takeUntil
-      ).subscribe((data) => {
-      if(Array.isArray(data?.tours)){
-        this.tours = data.tours;
-        this.toursStore=[...data.tours];
-      }
     });
-  }
+
+    combineLatest([
+      this.toursService.tourTypes$.pipe(startWith(null)), // Добавляем startWith(null)
+      this.toursService.tourDate$.pipe(startWith(null))   // Добавляем startWith(null)
+  ]).pipe(
+      takeUntil(this.destroyer)
+  ).subscribe(([type, date]) => {
+      this.tours = [...this.toursStore];
+
+        if (type) {
+            switch (type.key) {
+                case 'group':
+                    this.tours = this.tours.filter(el => el.type === 'group');
+                    break;
+                case 'single':
+                    this.tours = this.tours.filter(el => el.type === 'single');
+                    break;
+            }
+        }
+
+        if (date && isValid(date)) {
+            this.tours = this.tours.filter(tour => {
+                // Создаем НОВЫЕ объекты Date для сравнения
+                const tourDate = new Date(tour.date);
+                const calendarDate = new Date(date);
+                return isSameDay(tourDate, calendarDate); // Используем isSameDay из date-fns
+            });
+        }
+    });
+}
+
+
   ngOnDestroy(): void {
     this.destroyer.next(true); // Уведомляем об отписке
     this.destroyer.complete(); // Завершаем Subject
@@ -152,7 +195,9 @@ selectActive (index: number): void {
 
 getCountryDetail(ev:Event, code:string, tour: ITour): void {
   ev.stopPropagation();
-  this.toursService.getCountryByCode(code).subscribe((data: ICombinedData)=>{
+  this.toursService.getCountryByCode(code).pipe(
+    takeUntil(this.destroyer) // Добавляем управление подпиской
+  ).subscribe((data: ICombinedData)=>{
     if((data && data.countryData && data.weatherData)) {
       const countryInfo = data.countryData;
       this.country = countryInfo; // Сохраняем countryInfo 

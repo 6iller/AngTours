@@ -18,7 +18,8 @@ export class ToursService {
   readonly tourTypes$ = this.tourTypesSubject.asObservable(); 
 
   //date
-  private tourDateSubject = new Subject<Date>();
+  // private tourDateSubject = new Subject<Date>();
+  private tourDateSubject = new BehaviorSubject<Date | null>(null); // Используем BehaviorSubject<Date | null> для календаря
   readonly tourDate$ = this.tourDateSubject.asObservable();
 
   private showBasketOnlySubject = new BehaviorSubject<boolean>(false);
@@ -142,12 +143,17 @@ getTours(): Observable<ITourServerRes> {
     }
     }
 
-  initChangeTourType(type: TourType): void { //todo define type
+  initChangeTourType(type: TourType): void { 
     this.tourTypesSubject.next(type);
   }
-  initChangeTourDate(date:Date): void { //todo define type
-    this.tourDateSubject.next(date);
-  }
+  // initChangeTourDate(date:Date): void { 
+  //   this.tourDateSubject.next(date);
+  // }
+  // для календаря меняем метод выше на:
+  initChangeTourDate(date: Date | null): void {
+    this.tourDateSubject.next(date); // Передаем null для очистки
+}
+
   getCountryByCode(code:string):Observable<any> {
     return this.http.get<Coords[]>(API.countryByCode, {params: {codes:code}}).pipe(
       //send new data

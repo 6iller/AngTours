@@ -47,8 +47,16 @@ export class AsideComponent implements OnInit {
   changeTourType(ev: SelectChangeEvent): void {
     this.tourService.initChangeTourType(this.selectedType);
   }
-
-  changeDate(ev:Date): void {
+//метод для шаблона для очистки фильтра в календаре
+//метод для шаблона для очистки фильтра в календаре
+//метод для шаблона для очистки фильтра в календаре
+clearDate() {
+  
+  this.date = null;
+  console.log(this.date)
+  this.tourService.initChangeTourDate(null);
+}
+  changeDate(ev:any): void {
     console.log ('date', ev);
     this.tourService.initChangeTourDate(ev);
     // console.log ('****change date');
@@ -57,6 +65,8 @@ export class AsideComponent implements OnInit {
   toggleShowBasketOnly(): void { // Новый метод для обработки чекбокса
     this.tourService.initShowBasketOnly(this.showBasketOnly);
   }
+
+  
   ruLocale = {
     firstDayOfWeek: 1,
     dayNames: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
