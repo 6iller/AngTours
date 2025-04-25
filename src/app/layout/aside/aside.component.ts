@@ -66,9 +66,6 @@ export class AsideComponent implements OnInit {
     today: 'Сегодня',
     clear: 'Очистить'
   };
-  clearDate() {
-    // ... другая логика очистки ...
-    this.tourService.initChangeTourDate(null); 
 }
 //   translate(lang: string) {
 //     this.translateService.use(lang);
@@ -85,4 +82,3 @@ export class AsideComponent implements OnInit {
   //   console.log('Date cleared');
   // }
 
-}
