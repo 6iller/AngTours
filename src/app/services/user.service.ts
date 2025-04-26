@@ -18,21 +18,7 @@ export class UserService {
     this.loadUserFromStorage(); // Загрузка пользователя при инициализации сервиса
   }
 
-  // private getUser (login: string): IUser | null {
-  //   return this.userStorage.find((user) => login === user.login) || null;
-  // }
-
-  // addUser(user:IUser, isRememberMe?: boolean): true | string {
-  //   if(this.getUser(user.login)) {
-  //     return 'user already exists';
-  //   }
-  //   this.userStorage.push(user);
-  //   return true;
-  // }
-
-  // checkUser(login: string): boolean {
-  //   return !!this.getUser(login);
-  // }
+  
   registerUser(user: IUserRegister): Observable<string> {
     return this.http.post(API.registration, user, {responseType: 'text'});
   }
@@ -63,3 +49,27 @@ export class UserService {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+// private getUser (login: string): IUser | null {
+  //   return this.userStorage.find((user) => login === user.login) || null;
+  // }
+
+  // addUser(user:IUser, isRememberMe?: boolean): true | string {
+  //   if(this.getUser(user.login)) {
+  //     return 'user already exists';
+  //   }
+  //   this.userStorage.push(user);
+  //   return true;
+  // }
+
+  // checkUser(login: string): boolean {
+  //   return !!this.getUser(login);
+  // }

@@ -13,6 +13,8 @@ export const API = {
     countryByCode: 'https://restcountries.com/v3.1/alpha',
     getWeather: "https://api.open-meteo.com/v1/forecast",
     order:`${serverIp}/order`,
+    orders: `${serverIp}/orders`,
+
     // basket:`${serverIp}/basket`
 }
 

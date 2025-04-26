@@ -9,7 +9,7 @@ import { PasswordChangeComponent } from './pages/settings/settings/password-chan
 import { StatisticComponent } from './pages/settings/settings/statistic/statistic/statistic.component';
 import { OrderComponent } from './pages/order/order/order.component';
 import { BasketComponent } from './pages/basket/basket/basket.component';
-
+import { OrdersComponent } from './pages/orders/orders/orders.component';
 
 export const routes: Routes = [
     {path: 'auth', component: AuthComponent},
@@ -33,8 +33,14 @@ export const routes: Routes = [
                 ]
             },
             {path: 'order/:id', component: OrderComponent},
+            
         ]
     },
+    {
+        path: 'orders', 
+        canActivate: [authGuard],
+        component: OrdersComponent
+      },
     // доступ к корзине только после авторизации
     {
         path: 'basket',

@@ -1,4 +1,66 @@
-<!-- 
+
+<!--V2 для работы корзины-->
+<p-inputgroup>
+    <input pInputText placeholder="поиск тура" #searchInput />
+    <p-inputgroup-addon>
+        <p-button icon="pi pi-search" severity="secondary" variant="text"></p-button>
+    </p-inputgroup-addon>
+</p-inputgroup>
+
+<div appHighlight class="tours-list"> 
+    <div *ngFor="let item of tours | search: searchInput.value : 'name'; trackBy: trackById" class="tour-item">
+        <div (click)="goToTour(item)">
+            <p-card [header]="item.name" [subheader]="item.price" styleClass="tour-p-card">
+                <img alt="Card" class="w-10" src="/img/{{item.img}}" />
+                <p>{{ item.description | slice: 0:110 }}</p>
+                <p (click)="getCountryDetail($event, item.country?.iso_code2, item)">
+                    Страна: {{ item.country?.name_ru }} <img [src]="item.country?.flag_url" />
+                    
+                </p>
+            </p-card>
+            <div class="basket my-2 ml-2">
+                <i *ngIf="!basketService.isInBasket(item)" (click)="setItemToBasket($event, item)" class="pi pi-cart-plus" style="color: green;"></i>
+                <i *ngIf="basketService.isInBasket(item)" (click)="removeItemFromBasket($event, item)" class="pi pi-cart-minus" style="color: red;"></i>
+            </div>
+        </div>
+        <button *ngIf="isAdmin" pButton type="button" icon="pi pi-trash" 
+          class="p-button-danger delete-button" (click)="confirmDelete(item.id)">
+  </button>
+</div>
+
+<p-confirmDialog header="Подтверждение удаления" 
+                 [visible]="displayConfirmation"
+                [message]="'Вы уверены, что хотите удалить этот тур?'"
+                (accept)="deleteTour()"
+                (onReject)="displayConfirmation = false"
+                 rejectLabel="Нет" acceptLabel="Да">
+</p-confirmDialog>
+    <div *ngIf="(tours | search: searchInput.value : 'name').length === 0" class="no-data">Нет данных
+    </div>
+</div>
+
+
+
+<p-dialog [(visible)]="showModal" [modal]="true" [style]="{ width: '50rem' }">
+    <ng-template pTemplate="header">
+        <div *ngIf="weatherData">
+            <p>Температура: {{ weatherData.currentWeather }}°C</p>
+            <p> Дождь: {{ weatherData.rain ? 'идет' : 'не идет' }} </p>
+            <p> Снег: {{ weatherData.snowfall ? 'идет' : 'не идет' }} </p>
+            <p>Время суток: {{ weatherData.isDay ? 'день' : 'ночь' }}</p>
+        </div>
+    </ng-template>
+
+    <app-map *ngIf="showModal && location" [location]="location">
+        <p>Тур {{selectedTour.name}}</p>
+    </app-map>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Закрыть" [text]="true" severity="secondary" (click)="showModal = false" />
+    </ng-template>
+</p-dialog>
+
+<!-- V1
 <p-inputgroup>
     <input 
      
@@ -68,53 +130,3 @@ class="tours-list flex flex-wrap justify-content-around align-items-stretch">
         <p-button label="Закрыть" [text]="true" severity="secondary" (click)="showModal = false" />
     </ng-template>
 </p-dialog> -->
-
-<!--V2 для работы корзины-->
-<p-inputgroup>
-    <input pInputText placeholder="поиск тура" #searchInput />
-    <p-inputgroup-addon>
-        <p-button icon="pi pi-search" severity="secondary" variant="text"></p-button>
-    </p-inputgroup-addon>
-</p-inputgroup>
-
-<div appHighlight class="tours-list"> <div *ngFor="let item of tours | search: searchInput.value : 'name'; trackBy: trackById" class="tour-item">
-        <div (click)="goToTour(item)">
-            <p-card [header]="item.name" [subheader]="item.price" styleClass="tour-p-card">
-                <img alt="Card" class="w-10" src="/img/{{item.img}}" />
-                <p>{{ item.description | slice: 0:110 }}</p>
-                <p (click)="getCountryDetail($event, item.country?.iso_code2, item)">
-                    Страна: {{ item.country?.name_ru }} <img [src]="item.country?.flag_url" />
-                    
-                </p>
-            </p-card>
-            <div class="basket my-2 ml-2">
-                <i *ngIf="!basketService.isInBasket(item)" (click)="setItemToBasket($event, item)" class="pi pi-cart-plus" style="color: green;"></i>
-                <i *ngIf="basketService.isInBasket(item)" (click)="removeItemFromBasket($event, item)" class="pi pi-cart-minus" style="color: red;"></i>
-            </div>
-        </div>
-    </div>
-    <div *ngIf="(tours | search: searchInput.value : 'name').length === 0" class="no-data">Нет данных
-    </div>
-</div>
-
-
-
-<p-dialog [(visible)]="showModal" [modal]="true" [style]="{ width: '50rem' }">
-    <ng-template pTemplate="header">
-        <div *ngIf="weatherData">
-            <p>Температура: {{ weatherData.currentWeather }}°C</p>
-            <p> Дождь: {{ weatherData.rain ? 'идет' : 'не идет' }} </p>
-            <p> Снег: {{ weatherData.snowfall ? 'идет' : 'не идет' }} </p>
-            <p>Время суток: {{ weatherData.isDay ? 'день' : 'ночь' }}</p>
-        </div>
-    </ng-template>
-
-    <app-map *ngIf="showModal && location" [location]="location">
-        <p>Тур {{selectedTour.name}}</p>
-    </app-map>
-
-    <ng-template pTemplate="footer">
-        <p-button label="Закрыть" [text]="true" severity="secondary" (click)="showModal = false" />
-    </ng-template>
-</p-dialog>
-

@@ -48,8 +48,6 @@ export class AsideComponent implements OnInit {
     this.tourService.initChangeTourType(this.selectedType);
   }
 //метод для шаблона для очистки фильтра в календаре
-//метод для шаблона для очистки фильтра в календаре
-//метод для шаблона для очистки фильтра в календаре
 clearDate() {
   
   this.date = null;
@@ -59,10 +57,8 @@ clearDate() {
   changeDate(ev:any): void {
     console.log ('date', ev);
     this.tourService.initChangeTourDate(ev);
-    // console.log ('****change date');
-    // this.tourService.initChangeTourDate(ev);
   }
-  toggleShowBasketOnly(): void { // Новый метод для обработки чекбокса
+  toggleShowBasketOnly(): void { // метод для обработки чекбокса
     this.tourService.initShowBasketOnly(this.showBasketOnly);
   }
 
@@ -77,18 +73,3 @@ clearDate() {
     clear: 'Очистить'
   };
 }
-//   translate(lang: string) {
-//     this.translateService.use(lang);
-//     this.translateService.get('primeng').subscribe(res => this.primeng.setTranslation(res));
-// }
-// translate(lang: string): void {
-//   this.translateService.use(lang);
-//   this.translateService.get('primeng').subscribe((res: any) => this.config.setTranslation(res));
-
-  
-  // clearDate(): void {
-  //   this.date = null; // Сброс значения даты
-  //   this.tourService.initChangeTourDate(this.date); // Обновление даты в сервисе
-  //   console.log('Date cleared');
-  // }
-

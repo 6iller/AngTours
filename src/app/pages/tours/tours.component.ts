@@ -18,12 +18,15 @@ import { startWith, takeUntil } from 'rxjs/operators';
 import { DialogModule } from 'primeng/dialog' 
 import { MapComponent } from '../../shared/components/map/map/map.component';
 import { BasketService } from '../../services/basket.service';
-
+import { UserService } from '../../services/user.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 
 
 @Component({
   selector: 'app-tours',
+  providers: [ConfirmationService],
   imports: [
     CardModule, 
     InputGroupModule, 
@@ -37,7 +40,8 @@ import { BasketService } from '../../services/basket.service';
     MapComponent,
     DialogModule,
     CommonModule,
-    SlicePipe
+    SlicePipe,
+    ConfirmDialogModule
   ], //SlicePipe
   templateUrl: './tours.component.html',
   styleUrl: './tours.component.scss',
@@ -54,20 +58,146 @@ export class ToursComponent implements OnInit, OnDestroy{
   country: ICountriesResponseItem | null = null;
   weatherInfo: any = {day: null, rain: null};
   selectedTour: ITour = null;
+  displayConfirmation: boolean = false; 
+  tourToDeleteId: string | undefined;
 
-  // typeTourFilter: IFilter 
-  // typeTourSubscriber: Subscription;
-  // dateTourSubscriber: Subscription;
 
   constructor(private toursService: ToursService, 
     private route: ActivatedRoute,
     private router: Router,
-    public basketService: BasketService
+    public basketService: BasketService,
+    private userService: UserService,
+    private confirmationService: ConfirmationService,
   
   ){}
      
 
-  // ngOnInit(): void {
+  
+  // новый ngOnInit для календаря
+  ngOnInit(): void {
+    this.toursService.getTours().pipe(
+        takeUntil(this.destroyer)
+    ).subscribe((data) => {
+        if (Array.isArray(data?.tours)) {
+            this.tours = data.tours;
+            this.toursStore = [...data.tours];
+        }
+    });
+
+    combineLatest([
+      this.toursService.tourTypes$.pipe(startWith(null)), // Добавляем startWith(null)
+      this.toursService.tourDate$.pipe(startWith(null))   // Добавляем startWith(null)
+  ]).pipe(
+      takeUntil(this.destroyer)
+  ).subscribe(([type, date]) => {
+      this.tours = [...this.toursStore];
+
+        if (type) {
+            switch (type.key) {
+                case 'group':
+                    this.tours = this.tours.filter(el => el.type === 'group');
+                    break;
+                case 'single':
+                    this.tours = this.tours.filter(el => el.type === 'single');
+                    break;
+            }
+        }
+
+        if (date && isValid(date)) {
+            this.tours = this.tours.filter(tour => {
+                // Создаем новые объекты Date для сравнения
+                const tourDate = new Date(tour.date);
+                const calendarDate = new Date(date);
+                return isSameDay(tourDate, calendarDate); // Используем isSameDay из date-fns
+            });
+        }
+    });
+  }
+  
+  confirmDelete(tourId: string) {
+    this.tourToDeleteId = tourId;
+    // console.log("ID тура для удаления:", this.tourToDeleteId);
+    this.displayConfirmation = true;
+}
+
+
+deleteTour() {
+  if (this.tourToDeleteId) {
+      this.toursService.deleteTourByID(this.tourToDeleteId).subscribe(() => {
+          this.toursService.getTours().subscribe(data => {
+              if (data && Array.isArray(data.tours)) {
+                  this.tours = data.tours;
+                  this.toursStore = [...data.tours];
+              }
+          });
+      });
+      this.displayConfirmation = false;
+  }
+}
+
+get isAdmin(): boolean {
+  const user = this.userService.getUser(); // получим пользователя
+  return user && user.login === 'admin'; // проверка логина
+}
+
+
+  ngOnDestroy(): void {
+    this.destroyer.next(true); // Уведомляем об отписке
+    this.destroyer.complete(); // Завершаем Subject
+  }
+goToTour (item: ITour): void {
+  this.router.navigate(['tour', item.id], {relativeTo: this.route});
+}
+
+searchTour (ev:Event): void {
+  const target = ev.target as HTMLInputElement;
+  const targetValue = target.value;
+  this.tours = this.toursService.searchTours(this.toursStore, targetValue);
+}
+
+selectActive (index: number): void {
+  console.log('index', index)
+  const targetTour = this.tours.find((tour, i)=> i ===index);
+  if (targetTour) {
+    this.goToTour(targetTour);
+  }
+}
+
+getCountryDetail(ev:Event, code:string, tour: ITour): void {
+  ev.stopPropagation();
+  this.toursService.getCountryByCode(code).subscribe((data: ICombinedData)=>{
+    if((data && data.countryData && data.weatherData)) {
+      const countryInfo = data.countryData;
+      this.country = countryInfo; // Сохраняем countryInfo 
+      console.log('countryInfo', countryInfo)
+      this.location = {lat: countryInfo.latlng[0], lng: countryInfo.latlng[1]};
+      this.weatherData = data.weatherData; // Сохраняем weatherData
+      this.weatherInfo.day = this.weatherData.isDay ? 'День' : 'Ночь'
+      this.selectedTour=tour;
+      this.showModal = true;
+    } else {
+      console.error("ошибка данных");
+    }
+  });
+}
+
+setItemToBasket (ev: Event, item: ITour): void {
+  ev.stopPropagation();
+  this.basketService.setItemToBasket(item);
+}
+removeItemFromBasket (ev: Event, item: ITour):void {
+  ev.stopPropagation();
+  this.basketService.removeItemFromBasket(item);
+}
+trackById(index: number, item: ITour): any {
+  return item.id; //   идентификатор тура для кода шаблона V.2 работы корзины
+}
+
+
+}
+
+// ngOnInit докалендарный
+// ngOnInit(): void {
     
   //   //tour
   //   // this.typeTourSubscriber = this.toursService.tourTypes$.subscribe((tour)=>{
@@ -128,102 +258,3 @@ export class ToursComponent implements OnInit, OnDestroy{
   //     }
   //   });
   // }
-
-  // новый ngOnInit для календаря
-  ngOnInit(): void {
-    this.toursService.getTours().pipe(
-        takeUntil(this.destroyer)
-    ).subscribe((data) => {
-        if (Array.isArray(data?.tours)) {
-            this.tours = data.tours;
-            this.toursStore = [...data.tours];
-        }
-    });
-
-    combineLatest([
-      this.toursService.tourTypes$.pipe(startWith(null)), // Добавляем startWith(null)
-      this.toursService.tourDate$.pipe(startWith(null))   // Добавляем startWith(null)
-  ]).pipe(
-      takeUntil(this.destroyer)
-  ).subscribe(([type, date]) => {
-      this.tours = [...this.toursStore];
-
-        if (type) {
-            switch (type.key) {
-                case 'group':
-                    this.tours = this.tours.filter(el => el.type === 'group');
-                    break;
-                case 'single':
-                    this.tours = this.tours.filter(el => el.type === 'single');
-                    break;
-            }
-        }
-
-        if (date && isValid(date)) {
-            this.tours = this.tours.filter(tour => {
-                // Создаем НОВЫЕ объекты Date для сравнения
-                const tourDate = new Date(tour.date);
-                const calendarDate = new Date(date);
-                return isSameDay(tourDate, calendarDate); // Используем isSameDay из date-fns
-            });
-        }
-    });
-}
-
-
-  ngOnDestroy(): void {
-    this.destroyer.next(true); // Уведомляем об отписке
-    this.destroyer.complete(); // Завершаем Subject
-  }
-goToTour (item: ITour): void {
-  this.router.navigate(['tour', item.id], {relativeTo: this.route});
-}
-
-searchTour (ev:Event): void {
-  const target = ev.target as HTMLInputElement;
-  const targetValue = target.value;
-  this.tours = this.toursService.searchTours(this.toursStore, targetValue);
-}
-
-selectActive (index: number): void {
-  console.log('index', index)
-  const targetTour = this.tours.find((tour, i)=> i ===index);
-  if (targetTour) {
-    this.goToTour(targetTour);
-  }
-}
-
-getCountryDetail(ev:Event, code:string, tour: ITour): void {
-  ev.stopPropagation();
-  this.toursService.getCountryByCode(code).pipe(
-    takeUntil(this.destroyer) // Добавляем управление подпиской
-  ).subscribe((data: ICombinedData)=>{
-    if((data && data.countryData && data.weatherData)) {
-      const countryInfo = data.countryData;
-      this.country = countryInfo; // Сохраняем countryInfo 
-      console.log('countryInfo', countryInfo)
-      this.location = {lat: countryInfo.latlng[0], lng: countryInfo.latlng[1]};
-      this.weatherData = data.weatherData; // Сохраняем weatherData
-      this.weatherInfo.day = this.weatherData.isDay ? 'День' : 'Ночь'
-      this.selectedTour=tour;
-      this.showModal = true;
-    } else {
-      console.error("ошибка данных");
-    }
-  });
-}
-
-setItemToBasket (ev: Event, item: ITour): void {
-  ev.stopPropagation();
-  this.basketService.setItemToBasket(item);
-}
-removeItemFromBasket (ev: Event, item: ITour):void {
-  ev.stopPropagation();
-  this.basketService.removeItemFromBasket(item);
-}
-trackById(index: number, item: ITour): any {
-  return item.id; //   идентификатор тура для кода шаблона V.2 работы корзины
-}
-
-
-}

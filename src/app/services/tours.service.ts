@@ -27,50 +27,6 @@ export class ToursService {
 
   constructor(private http: HttpClient, private mapService: MapService, private loaderService: LoaderService, private basketService: BasketService) { }
 
-  // getTours (): Observable<ITourServerRes> {  //lection: ITour[] 
-  //   const countries = this.http.get<ICountriesResponseItem[]>(API.countries);
-  //   const tours = this.http.get<ITourServerRes>(API.tours); // проверить 
-  //   // return this.http.get<ITourServerRes>(API.tours);
-  //   return forkJoin<[ICountriesResponseItem[], ITourServerRes]>([countries,tours]).pipe (
-  //     map((data)=>{
-  //       let toursWithCountries = [] as ITour[];
-  //       const tourArr = data[1].tours;
-  //       const countriesMap = new Map();
-        
-      //   data[0].forEach(country =>{
-      //     countriesMap.set(country.iso_code2, country);
-      //   });
-        
-      //   if (Array.isArray(tourArr)) {
-      //     console.log('***toursArr', tourArr)
-      //     toursWithCountries = tourArr.map((tour)=>{
-      //       return {
-      //         ...tour,
-      //         country: countriesMap.get(tour.code) || null // add new prop
-      //       }
-      //     });
-      //   } 
-      //   return toursWithCountries;
-      // }
-//       countriesResponse.forEach(country => {
-//         countriesMap.set(country.iso_code2, country);
-//       });
-
-//       if (Array.isArray(tourArr)) {
-//         console.log('***toursArr', tourArr);
-//         toursWithCountries.push(...tourArr.map((tour) => {
-//           return {
-//             ...tour,
-//             country: countriesMap.get(tour.code) || null // добавляем новое свойство
-//           };
-//         }));
-//       }
-
-//       // Возвращаем объект с массивом туров внутри свойства 'tours'
-//       return { tours: toursWithCountries }; // Изменяем здесь
-//     })
-//   );
-// }
 getTours(): Observable<ITourServerRes> {
   // set loader
   this.loaderService.setLoader(true);
@@ -195,3 +151,48 @@ getTours(): Observable<ITourServerRes> {
 
   } 
 
+
+  // getTours (): Observable<ITourServerRes> {  //lection: ITour[] 
+  //   const countries = this.http.get<ICountriesResponseItem[]>(API.countries);
+  //   const tours = this.http.get<ITourServerRes>(API.tours); // проверить 
+  //   // return this.http.get<ITourServerRes>(API.tours);
+  //   return forkJoin<[ICountriesResponseItem[], ITourServerRes]>([countries,tours]).pipe (
+  //     map((data)=>{
+  //       let toursWithCountries = [] as ITour[];
+  //       const tourArr = data[1].tours;
+  //       const countriesMap = new Map();
+        
+      //   data[0].forEach(country =>{
+      //     countriesMap.set(country.iso_code2, country);
+      //   });
+        
+      //   if (Array.isArray(tourArr)) {
+      //     console.log('***toursArr', tourArr)
+      //     toursWithCountries = tourArr.map((tour)=>{
+      //       return {
+      //         ...tour,
+      //         country: countriesMap.get(tour.code) || null // add new prop
+      //       }
+      //     });
+      //   } 
+      //   return toursWithCountries;
+      // }
+//       countriesResponse.forEach(country => {
+//         countriesMap.set(country.iso_code2, country);
+//       });
+
+//       if (Array.isArray(tourArr)) {
+//         console.log('***toursArr', tourArr);
+//         toursWithCountries.push(...tourArr.map((tour) => {
+//           return {
+//             ...tour,
+//             country: countriesMap.get(tour.code) || null // добавляем новое свойство
+//           };
+//         }));
+//       }
+
+//       // Возвращаем объект с массивом туров внутри свойства 'tours'
+//       return { tours: toursWithCountries }; // Изменяем здесь
+//     })
+//   );
+// }
